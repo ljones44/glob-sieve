@@ -27,6 +27,16 @@ class TranslateTests(unittest.TestCase):
         self.assertFalse(match("c.py", "[ab].py"))
         self.assertTrue(match("c.py", "[!ab].py"))
 
+    def test_ignore_case(self):
+        self.assertFalse(match("FOO.PY", "*.py"))
+        self.assertTrue(match("FOO.PY", "*.py", ignore_case=True))
+        self.assertTrue(match("src/Foo.py", "SRC/**/*.PY", ignore_case=True))
+        self.assertFalse(match("src/Foo.py", "SRC/**/*.PY"))
+
+    def test_ignore_case_applies_to_character_class(self):
+        self.assertTrue(match("A.py", "[ab].py", ignore_case=True))
+        self.assertFalse(match("A.py", "[ab].py"))
+
 
 if __name__ == "__main__":
     unittest.main()

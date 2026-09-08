@@ -49,6 +49,13 @@ pyproject.toml
 Multiple input files are read in order; `-` means read stdin at that point
 in the list. With no file arguments at all, stdin is read by default.
 
+Match case-insensitively with `-i`:
+
+```
+$ echo 'README.MD' | globsieve -i '*.md'
+README.MD
+```
+
 The pattern language:
 
 - `*` matches any characters except `/`, within one path segment.

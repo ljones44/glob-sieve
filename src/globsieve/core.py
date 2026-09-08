@@ -66,11 +66,12 @@ def translate(pattern):
     return "".join(out)
 
 
-def compile_pattern(pattern):
+def compile_pattern(pattern, ignore_case=False):
     """Compile a glob pattern into a regex meant to be used with fullmatch()."""
-    return re.compile(translate(pattern))
+    flags = re.IGNORECASE if ignore_case else 0
+    return re.compile(translate(pattern), flags)
 
 
-def match(path, pattern):
+def match(path, pattern, ignore_case=False):
     """Return True if path matches the glob pattern."""
-    return compile_pattern(pattern).fullmatch(path) is not None
+    return compile_pattern(pattern, ignore_case).fullmatch(path) is not None

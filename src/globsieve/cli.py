@@ -40,9 +40,15 @@ def main(argv=None):
         action="store_true",
         help="print paths that do NOT match instead of ones that do",
     )
+    parser.add_argument(
+        "-i",
+        "--ignore-case",
+        action="store_true",
+        help="match case-insensitively",
+    )
     args = parser.parse_args(argv)
 
-    regex = compile_pattern(args.pattern)
+    regex = compile_pattern(args.pattern, ignore_case=args.ignore_case)
     found = False
     for path in _iter_paths(args.files):
         is_match = regex.fullmatch(path) is not None
