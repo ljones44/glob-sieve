@@ -56,6 +56,19 @@ $ echo 'README.MD' | globsieve -i '*.md'
 README.MD
 ```
 
+Read patterns from a file instead of the command line with `-f`/`--pattern-file`,
+one pattern per line. A path matches if it matches any line in the file (they're
+ORed together). When `-f` is given, the positional pattern argument is dropped
+and every remaining positional argument is treated as a paths file:
+
+```
+$ cat globsieve.ignore
+*.pyc
+**/__pycache__/**
+*.log
+$ git ls-files --others | globsieve -f globsieve.ignore -v
+```
+
 The pattern language:
 
 - `*` matches any characters except `/`, within one path segment.

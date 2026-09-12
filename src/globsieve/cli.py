@@ -28,11 +28,12 @@ def main(argv=None):
         prog="globsieve",
         description="Print which of a list of paths match a glob pattern.",
     )
-    parser.add_argument("pattern", help="glob pattern, e.g. 'src/**/*.py'")
     parser.add_argument(
-        "files",
+        "args",
         nargs="*",
-        help="files with one path per line; omit, or pass -, to read stdin",
+        metavar="pattern [file ...]",
+        help="glob pattern followed by files with one path per line; "
+        "omit the pattern if --pattern-file is given",
     )
     parser.add_argument(
         "-v",
@@ -46,12 +47,33 @@ def main(argv=None):
         action="store_true",
         help="match case-insensitively",
     )
+    parser.add_argument(
+        "-f",
+        "--pattern-file",
+        metavar="FILE",
+        help="file with one glob pattern per line, ORed together; "
+        "when given, every positional argument is treated as a path file",
+    )
     args = parser.parse_args(argv)
 
-    regex = compile_pattern(args.pattern, ignore_case=args.ignore_case)
+    if args.pattern_file is not None:
+        patterns = []
+        with open(args.pattern_file, "r", encoding="utf-8") as fh:
+            patterns.extend(_read_lines(fh))
+        if not patterns:
+            parser.error(f"{args.pattern_file!r} has no patterns in it")
+        files = args.args
+    else:
+        if not args.args:
+            parser.error("no pattern given: pass a pattern argument or --pattern-file")
+        patterns = [args.args[0]]
+        files = args.args[1:]
+
+    regexes = [compile_pattern(p, ignore_case=args.ignore_case) for p in patterns]
+
     found = False
-    for path in _iter_paths(args.files):
-        is_match = regex.fullmatch(path) is not None
+    for path in _iter_paths(files):
+        is_match = any(regex.fullmatch(path) is not None for regex in regexes)
         if is_match != args.invert:
             print(path)
             found = True
