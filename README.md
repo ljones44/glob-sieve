@@ -77,6 +77,9 @@ The pattern language:
 - `?` matches exactly one character, not `/`.
 - `[seq]` and `[!seq]` match a single character from (or not from) a set,
   same as shell character classes.
+- `{a,b,c}` expands to each alternative, like shell brace expansion. It can
+  nest, e.g. `*.{md,{yml,yaml}}`. A `{...}` group with no comma in it isn't
+  an expansion and is left as literal text.
 
 ## Install
 

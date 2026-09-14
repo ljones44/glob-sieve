@@ -37,6 +37,29 @@ class TranslateTests(unittest.TestCase):
         self.assertTrue(match("A.py", "[ab].py", ignore_case=True))
         self.assertFalse(match("A.py", "[ab].py"))
 
+    def test_brace_expansion(self):
+        self.assertTrue(match("foo.py", "foo.{py,txt}"))
+        self.assertTrue(match("foo.txt", "foo.{py,txt}"))
+        self.assertFalse(match("foo.md", "foo.{py,txt}"))
+
+    def test_brace_expansion_combines_with_other_syntax(self):
+        self.assertTrue(match("src/foo.yml", "src/**/*.{yml,yaml}"))
+        self.assertTrue(match("src/pkg/foo.yaml", "src/**/*.{yml,yaml}"))
+        self.assertFalse(match("src/foo.json", "src/**/*.{yml,yaml}"))
+
+    def test_nested_brace_expansion(self):
+        self.assertTrue(match("foo.yml", "foo.{md,{yml,yaml}}"))
+        self.assertTrue(match("foo.yaml", "foo.{md,{yml,yaml}}"))
+        self.assertTrue(match("foo.md", "foo.{md,{yml,yaml}}"))
+        self.assertFalse(match("foo.json", "foo.{md,{yml,yaml}}"))
+
+    def test_brace_group_without_comma_is_literal(self):
+        self.assertTrue(match("a{b}c", "a{b}c"))
+        self.assertFalse(match("abc", "a{b}c"))
+
+    def test_unmatched_brace_is_literal(self):
+        self.assertTrue(match("a{b", "a{b"))
+
 
 if __name__ == "__main__":
     unittest.main()
