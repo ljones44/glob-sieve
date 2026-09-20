@@ -69,6 +69,13 @@ $ cat globsieve.ignore
 $ git ls-files --others | globsieve -f globsieve.ignore -v
 ```
 
+For paths that might contain newlines, use `-0`/`--null` to read NUL-separated
+input (as produced by `find -print0`) and print NUL-separated output instead:
+
+```
+$ find . -type f -print0 | globsieve -0 '*.py' | xargs -0 ls -l
+```
+
 The pattern language:
 
 - `*` matches any characters except `/`, within one path segment.

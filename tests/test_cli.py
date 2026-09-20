@@ -65,6 +65,20 @@ class CliTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 self._run(["-f", patterns, paths])
 
+    def test_null_separated_input_and_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = self._write(tmp, "paths.txt", "foo.py\0src/bar.py\0README.md")
+            status, out = self._run(["-0", "*.py", paths])
+        self.assertEqual(status, 0)
+        self.assertEqual(out, "foo.py\0")
+
+    def test_null_separated_input_ignores_embedded_newlines(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = self._write(tmp, "paths.txt", "weird\nname.py\0other.txt")
+            status, out = self._run(["-0", "*.py", paths])
+        self.assertEqual(status, 0)
+        self.assertEqual(out, "weird\nname.py\0")
+
 
 if __name__ == "__main__":
     unittest.main()
